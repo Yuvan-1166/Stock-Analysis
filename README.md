@@ -1,7 +1,5 @@
 # Stock-Analysis
 
-# Stock Predictor
-
 A stock market analysis and prediction web application built using Streamlit - Python. The project utilizes machine learning models (Linear Regression, Random Forest, LSTM) to predict stock prices and visualize stock trends.
 
 ## Features
@@ -76,4 +74,3 @@ Developed by [Yuvan Shankar S](https://github.com/Yuvan-1166).
 ## Contact
 
 For queries or collaboration, email: yuvanshankars.1166@google.com
-
