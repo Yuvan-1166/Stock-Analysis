@@ -6,6 +6,8 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import yfinance as yf
+from alpha_vantage.fundamentaldata import FundamentalData as f
+from stocknews import StockNews
 
 
 st.set_page_config(page_title='Stock Analyzer!', page_icon = "📈")
@@ -23,9 +25,8 @@ with st.sidebar:
 
 
 if st.session_state.ticker:
-    df = yf.download(ticker, start, end)
-
-    fig = px.line(df, x=df.index, y = df['Close'], title = ticker)
+    df = yf.download(ticker, start, end, group_by=ticker)
+    fig = px.line(df, x=df.index, y = df[(ticker, 'Close')], title = ticker)
     st.plotly_chart(fig)
 
     pricings, fundamentals, news = st.tabs(['Pricings', 'Fundamentals', 'News'])
@@ -33,7 +34,7 @@ if st.session_state.ticker:
     with pricings:
         st.header("Pricing Movements")
         data = df
-        data['% Change'] = df['Close'] / df['Close'].shift(1)
+        data['% Change'] = df[(ticker, 'Close')] / df[(ticker, 'Close')].shift(1)
         data.dropna(inplace = True)
         st.write(data)
         annual_return = data['% Change'].mean()*252*100
@@ -42,7 +43,6 @@ if st.session_state.ticker:
         st.write('Standard Deviation is', sd*100, '%')
         st.write('Risk Adj. Return is', annual_return/sd*100)
 
-    from alpha_vantage.fundamentaldata import FundamentalData as f
     with fundamentals:
         key = "7NVK89JAQ4DP75JA"
         fd = f(key, output_format = 'pandas')
@@ -62,7 +62,6 @@ if st.session_state.ticker:
         cf.columns = list(cash_flow.T.iloc[0])
         st.write(cf)
         
-    from stocknews import StockNews
     with news:
         st.header(f'News about {ticker}')
         sn = StockNews(ticker, save_news=False)
